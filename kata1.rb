@@ -23,7 +23,7 @@ class Kata1Test < Minitest::Test
       assert_equal 1, add("1")
       assert_equal 2, add("2")
       assert_equal 3, add("3")
-      assert_equal 1234567, add("1234567")
+      assert_equal 123, add("123")
     end
 
     it "returns the sum if 2 integers are provided separated by commas" do
@@ -59,6 +59,13 @@ class Kata1Test < Minitest::Test
       assert_raises(Kata1::NegativesNotAllowed, "Negative not allowed - -1,-323") { add("-1\n2,-323") }
     end
 
+    it "ignores numbers bigger than 1000" do
+      assert_equal 15, add("//;\n1;2;3;1001;4;5")
+      assert_equal 1326, add("//x\n2000x1x1000x2x323")
+      assert_equal 326, add("//.\n1.2.323.1002")
+      assert_equal 1014, add("//^\n1^2^999^10002^3^4^5")
+    end
+
     def add(input)
       kata.add(input)
     end
@@ -84,7 +91,7 @@ class Kata1
 
     numbers_int = get_numbers_as_int(numbers)
     verify_negatives(numbers_int)
-    numbers_int.sum
+    sum(numbers_int)
   end
 
   def get_delimiter_regex(first_line)
@@ -106,5 +113,9 @@ class Kata1
   def verify_negatives(numbers)
     negatives = numbers.select(&:negative?)
     NegativesNotAllowed.raise_error(negatives) if negatives.length.positive?
+  end
+
+  def sum(numbers)
+    numbers.sum { |n| n > 1000 ? 0 : n }
   end
 end
