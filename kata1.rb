@@ -46,7 +46,7 @@ class Kata1Test < Minitest::Test
       assert_equal 326, add("1\n2,323")
     end
 
-    it "returns the sum if the numbers are separated by a single character custom delimeter, other than comma and newline" do
+    it "returns the sum if the numbers are separated by a single character custom delimeter (other than - , \\n, [, ])" do
       assert_equal 15, add("//;\n1;2;3;4;5")
       assert_equal 326, add("//x\n1x2x323")
       assert_equal 326, add("//.\n1.2.323")
@@ -64,6 +64,13 @@ class Kata1Test < Minitest::Test
       assert_equal 1326, add("//x\n2000x1x1000x2x323")
       assert_equal 326, add("//.\n1.2.323.1002")
       assert_equal 1014, add("//^\n1^2^999^10002^3^4^5")
+    end
+
+    it "custom delimiters can be any length when enclosed in square brackets (other than - , \\n, [, ])" do
+      assert_equal 15, add("//[;;]\n1;;2;;3;;4;;5")
+      assert_equal 326, add("//[abc]\n1abc2abc323")
+      assert_equal 326, add("//[.^%]\n1.^%2.^%323")
+      assert_equal 15, add("//[!!!]\n1!!!2!!!3!!!4!!!5")
     end
 
     def add(input)
@@ -96,11 +103,15 @@ class Kata1
 
   def get_delimiter_regex(first_line)
     if first_line.start_with?("//")
-      delimiter = first_line.gsub("//", "")
+      delimiter = parse_custom_delimiter(first_line)
       [true, /#{Regexp.quote(delimiter)}{1}/]
     else
       [false, /[,\n]{1}/]
     end
+  end
+
+  def parse_custom_delimiter(first_line)
+    first_line.gsub(/[\/\/\[\]]/, '')
   end
 
   def get_numbers_as_int(numbers)
