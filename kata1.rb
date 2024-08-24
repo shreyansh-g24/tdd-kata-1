@@ -46,6 +46,13 @@ class Kata1Test < Minitest::Test
       assert_equal 326, add("1\n2,323")
     end
 
+    it "returns the sum if the numbers are separated by a single character custom delimeter, other than comma and newline" do
+      assert_equal 15, add("//;\n1;2;3;4;5")
+      assert_equal 326, add("//x\n1x2x323")
+      assert_equal 326, add("//.\n1.2.323")
+      assert_equal 15, add("//^\n1^2^3^4^5")
+    end
+
     def add(input)
       kata.add(input)
     end
@@ -63,6 +70,18 @@ class Kata1
     Kata1::InvalidInput.raise_error unless numbers.is_a?(String)
     return 0 if numbers.length.zero?
 
-    numbers.split(/[,\n]{1}/).sum(&:to_i)
+    lines = numbers.split(/\n/)
+    is_custom_delimiter, delimiter_regex = get_delimiter_regex(lines[0])
+    joined = is_custom_delimiter ? lines[1..].join("\n") : lines.join("\n")
+    joined.split(delimiter_regex).sum(&:to_i)
+  end
+
+  def get_delimiter_regex(first_line)
+    if first_line.start_with?("//")
+      delimiter = first_line.gsub("//", "")
+      [true, /#{Regexp.quote(delimiter)}{1}/]
+    else
+      [false, /[,\n]{1}/]
+    end
   end
 end
