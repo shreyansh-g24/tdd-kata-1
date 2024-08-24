@@ -1,25 +1,42 @@
 require "minitest/autorun"
 
 class Kata1Test < Minitest::Test
-  def setup
-    @kata = Kata1.new
-  end
+  describe "#add" do
+    let(:kata) { Kata1.new }
 
-  def test_add_raises_error_when_input_is_not_string
-    assert_raises(Kata1::InvalidInput, "Input must be string") { add(nil) }
-    assert_raises(Kata1::InvalidInput, "Input must be string") { add(1) }
-    assert_raises(Kata1::InvalidInput, "Input must be string") { add(Class) }
-    assert_raises(Kata1::InvalidInput, "Input must be string") { add(true) }
-  end
+    it "add raises error when input is not string" do
+      assert_raises(Kata1::InvalidInput, "Input must be string") { add(nil) }
+      assert_raises(Kata1::InvalidInput, "Input must be string") { add(1) }
+      assert_raises(Kata1::InvalidInput, "Input must be string") { add(Class) }
+      assert_raises(Kata1::InvalidInput, "Input must be string") { add(true) }
+    end
 
-  def test_add_returns_integer
-    assert_kind_of Integer, add("")
-  end
+    it "add returns integer" do
+      assert_kind_of Integer, add("")
+    end
 
-  private
+    it "add returns 0 for empty string" do
+      assert_equal add(""), 0
+    end
 
-  def add(input)
-    @kata.add(input)
+    it "add returns n if only 1 integer is provided" do
+      assert_equal add("1"), 1
+      assert_equal add("2"), 2
+      assert_equal add("3"), 3
+      assert_equal add("1234567"), 1234567
+    end
+
+    it "returns the sum if 2 integers are provided" do
+      assert_equal add("1,2"), 3
+      assert_equal add("3,4"), 7
+      assert_equal add("11,21"), 32
+      assert_equal add("123,2"), 125
+      assert_equal add("1,234"), 235
+    end
+
+    def add(input)
+      kata.add(input)
+    end
   end
 end
 
@@ -32,7 +49,8 @@ class Kata1
 
   def add(numbers)
     Kata1::InvalidInput.raise_error unless numbers.is_a?(String)
+    return 0 if numbers.length.zero?
 
-    0
+    numbers.split(",").sum(&:to_i)
   end
 end
