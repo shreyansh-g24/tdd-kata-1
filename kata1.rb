@@ -46,7 +46,7 @@ class Kata1Test < Minitest::Test
       assert_equal 326, add("1\n2,323")
     end
 
-    it "returns the sum if the numbers are separated by a single character custom delimeter (other than - , \\n, [, ], -)" do
+    it "returns the sum if the numbers are separated by a single character custom delimeter (other than - , \\n, [, ], - and other special characters)" do
       assert_equal 15, add("//;\n1;2;3;4;5")
       assert_equal 326, add("//x\n1x2x323")
       assert_equal 326, add("//.\n1.2.323")
@@ -66,18 +66,25 @@ class Kata1Test < Minitest::Test
       assert_equal 1014, add("//^\n1^2^999^10002^3^4^5")
     end
 
-    it "custom delimiters can be any length when enclosed in square brackets (other than - , \\n, [, ], -)" do
+    it "custom delimiters can be any length when enclosed in square brackets (other than - , \\n, [, ], - and other special characters)" do
       assert_equal 15, add("//[;;]\n1;;2;;3;;4;;5")
       assert_equal 326, add("//[abc]\n1abc2abc323")
       assert_equal 326, add("//[.^%]\n1.^%2.^%323")
       assert_equal 15, add("//[!!!]\n1!!!2!!!3!!!4!!!5")
     end
 
-    it "multiple single character custom delimiters can be provided enclosed in square brackets (other than - , \\n, [, ], -)" do
+    it "multiple single character custom delimiters can be provided enclosed in square brackets (other than - , \\n, [, ], - and other special characters)" do
       assert_equal 15, add("//[;][.][%]\n1;2.3%1001;4%5")
       assert_equal 1326, add("//[x][y][z]\n2000x1z1000y2z323")
       assert_equal 326, add("//[.][q][|]\n1.2|323q1002")
       assert_equal 1014, add("//[^][+]\n1+2^999+10002+3^4^5")
+    end
+
+    it "multiple multi character custom delimiters can be provided enclosed in square brackets (other than - , \\n, [, ], - and other special characters)" do
+      assert_equal 15, add("//[;x][..][%!]\n1;x2..3%!1001;x4%!5")
+      assert_equal 1326, add("//[x`][@y][#z]\n2000x`1#z1000@y2#z323")
+      assert_equal 326, add("//[abc][qwe][|$%]\n1abc2|$%323qwe1002")
+      assert_equal 1014, add("//[|^][++]\n1++2|^999++10002++3|^4|^5")
     end
 
     def add(input)
