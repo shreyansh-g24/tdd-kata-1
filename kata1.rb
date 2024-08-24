@@ -26,12 +26,19 @@ class Kata1Test < Minitest::Test
       assert_equal add("1234567"), 1234567
     end
 
-    it "returns the sum if 2 integers are provided" do
+    it "returns the sum if 2 integers are provided separated by commas" do
       assert_equal add("1,2"), 3
       assert_equal add("3,4"), 7
       assert_equal add("11,21"), 32
       assert_equal add("123,2"), 125
       assert_equal add("1,234"), 235
+    end
+
+    it "returns the sum for any amount of numbers are provided separated by commas" do
+      assert_equal add("1,2,3,4,5"), 15
+      assert_equal add("1,2,323"), 326
+      assert_equal add("112,0,32"), 144
+      assert_equal add("1,1,1,1,1,1,1,1,1,1"), 10
     end
 
     def add(input)
