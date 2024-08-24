@@ -53,6 +53,12 @@ class Kata1Test < Minitest::Test
       assert_equal 15, add("//^\n1^2^3^4^5")
     end
 
+    it "raises NegativesNotAllowed if negative numbers are passed. Also returns the negatives in an error message" do
+      assert_raises(Kata1::NegativesNotAllowed, "Negative not allowed - -1") { add("//;\n-1;2;3;4;5") }
+      assert_raises(Kata1::NegativesNotAllowed, "Negative not allowed - -2,-323") { add("//x\n1x-2x-323") }
+      assert_raises(Kata1::NegativesNotAllowed, "Negative not allowed - -1,-323") { add("-1\n2,-323") }
+    end
+
     def add(input)
       kata.add(input)
     end
@@ -60,20 +66,25 @@ class Kata1Test < Minitest::Test
 end
 
 class Kata1
-  class Kata1::InvalidInput < Exception
+  class InvalidInput < Exception
     def self.raise_error
       raise self, "Input must be string"
     end
   end
 
+  class NegativesNotAllowed < Exception
+    def self.raise_error(negatives)
+      raise self, "Negatives not allowed - #{negatives.join(",")}"
+    end
+  end
+
   def add(numbers)
-    Kata1::InvalidInput.raise_error unless numbers.is_a?(String)
+    InvalidInput.raise_error unless numbers.is_a?(String)
     return 0 if numbers.length.zero?
 
-    lines = numbers.split(/\n/)
-    is_custom_delimiter, delimiter_regex = get_delimiter_regex(lines[0])
-    joined = is_custom_delimiter ? lines[1..].join("\n") : lines.join("\n")
-    joined.split(delimiter_regex).sum(&:to_i)
+    numbers_int = get_numbers_as_int(numbers)
+    verify_negatives(numbers_int)
+    numbers_int.sum
   end
 
   def get_delimiter_regex(first_line)
@@ -83,5 +94,17 @@ class Kata1
     else
       [false, /[,\n]{1}/]
     end
+  end
+
+  def get_numbers_as_int(numbers)
+    lines = numbers.split(/\n/)
+    is_custom_delimiter, delimiter_regex = get_delimiter_regex(lines[0])
+    joined = is_custom_delimiter ? lines[1..].join("\n") : lines.join("\n")
+    joined.split(delimiter_regex).map(&:to_i)
+  end
+
+  def verify_negatives(numbers)
+    negatives = numbers.select(&:negative?)
+    NegativesNotAllowed.raise_error(negatives) if negatives.length.positive?
   end
 end
